@@ -85,6 +85,7 @@ describe "AuthenticationPages" do
 	end
       end
     end
+
     describe "as wrong user" do
       let(:user) { FactoryGirl.create(:user) }
       let(:wrong_user) { FactoryGirl.create(:user, email:"wrong@examle.com") }
@@ -112,6 +113,14 @@ describe "AuthenticationPages" do
 	specify { expect(response).to redirect_to(root_path) }
       end
     end
-
   end
+
+  describe "visit root-path as non-signed user" do
+    before { visit root_path }
+
+    it { should_not have_content('User') }
+    it { should_not have_content('Profile') }
+    it { should_not have_content('Settings') }
+  end
+
 end
