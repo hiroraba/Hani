@@ -67,13 +67,12 @@ describe "AuthenticationPages" do
 
       describe "in the Users controller" do
 	describe "visiting the user index" do
-	  before { visit user_path }
+	  before { visit edit_user_path }
 	  it { should have_title('Sign in') }
 	end
       end
 
       describe "visiting the edit page" do
-
 	describe "visiting the edit page" do
 	  before { visit edit_user_path(user) }
 	  it { should have_title('Sign in') }
@@ -84,34 +83,46 @@ describe "AuthenticationPages" do
 	  specify { expect(response).to redirect_to(signin_path) }
 	end
       end
-    end
-    describe "as wrong user" do
-      let(:user) { FactoryGirl.create(:user) }
-      let(:wrong_user) { FactoryGirl.create(:user, email:"wrong@examle.com") }
-      before { sign_in user, no_capybara: true }
 
-      describe "visiting Users#edit page" do
-	before { visit edit_user_path(wrong_user) }
-	it { should_not have_title(full_title('Edit user')) }
+      describe "in the Microposts controller" do
+	describe "submitting to the create action" do
+	  before { post microposts_path }
+	  specify { expect(response).to redirect_to(signin_path) }
+	end
+
+	describe "submitting to the destory action" do
+	  before { delete micropost_path(FactoryGirl.create(:micropost)) }
+	  specify { expect(response).to redirect_to(signin_path) }
+	end
       end
 
-      describe "submitting a PATCH request to" do
-	before { patch user_path(wrong_user) }
-	specify { expect(response).to redirect_to(root_path) }
+      describe "as wrong user" do
+	let(:user) { FactoryGirl.create(:user) }
+	let(:wrong_user) { FactoryGirl.create(:user, email:"wrong@examle.com") }
+	before { sign_in user, no_capybara: true }
+
+	describe "visiting Users#edit page" do
+	  before { visit edit_user_path(wrong_user) }
+	  it { should_not have_title(full_title('Edit user')) }
+	end
+
+	describe "submitting a PATCH request to" do
+	  before { patch user_path(wrong_user) }
+	  specify { expect(response).to redirect_to(root_path) }
+	end
+      end
+
+      describe "as non-admin user" do
+	let(:user) { FactoryGirl.create(:user) }
+	let(:non_admin) {FactoryGirl.create(:user) }
+
+	before { sign_in non_admin, no_capybara:true }
+
+	describe "submitting a DELETE request to the Users#destory action" do
+	  before { delete user_path(user) }
+	  specify { expect(response).to redirect_to(root_path) }
+	end
       end
     end
-
-    describe "as non-admin user" do
-      let(:user) { FactoryGirl.create(:user) }
-      let(:non_admin) {FactoryGirl.create(:user) }
-
-      before { sign_in non_admin, no_capybara:true }
-
-      describe "submitting a DELETE request to the Users#destory action" do
-	before { delete user_path(user) }
-	specify { expect(response).to redirect_to(root_path) }
-      end
-    end
-
   end
 end
