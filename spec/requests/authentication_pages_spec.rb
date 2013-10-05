@@ -67,13 +67,12 @@ describe "AuthenticationPages" do
 
       describe "in the Users controller" do
 	describe "visiting the user index" do
-	  before { visit user_path }
+	  before { visit edit_user_path }
 	  it { should have_title('Sign in') }
 	end
       end
 
       describe "visiting the edit page" do
-
 	describe "visiting the edit page" do
 	  before { visit edit_user_path(user) }
 	  it { should have_title('Sign in') }
@@ -83,6 +82,19 @@ describe "AuthenticationPages" do
 	  before { patch user_path(user) }
 	  specify { expect(response).to redirect_to(signin_path) }
 	end
+      end
+    end
+
+
+    describe "in the Microposts controller" do
+      describe "submitting to the create action" do
+	before { post microposts_path }
+	specify { expect(response).to redirect_to(signin_path) }
+      end
+
+      describe "submitting to the destory action" do
+	before { delete micropost_path(FactoryGirl.create(:micropost)) }
+	specify { expect(response).to redirect_to(signin_path) }
       end
     end
 
@@ -122,5 +134,4 @@ describe "AuthenticationPages" do
     it { should_not have_content('Profile') }
     it { should_not have_content('Settings') }
   end
-
 end
