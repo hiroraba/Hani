@@ -67,6 +67,31 @@ describe "User pages" do
       it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
     end
+
+    describe "micropost count" do
+      let(:user1) { FactoryGirl.create(:user) }
+      let!(:m1) { FactoryGirl.create(:micropost, user: user1, content: "Foo") }
+      let!(:m2) { FactoryGirl.create(:micropost, user: user1, content: "Bar") }
+
+      let(:user2) { FactoryGirl.create(:user) }
+      let!(:m3) { FactoryGirl.create(:micropost, user: user2, content: "Hoo") }
+
+      describe "micropost count 1" do
+	before do
+	  sign_in user1
+	  visit root_path
+	end
+	it {should have_content('2 microposts') }
+      end
+
+      describe "micropost count 2" do
+	before do
+	  sign_in user2
+	  visit root_path
+	end
+	it {should have_content('1 micropost') }
+      end
+    end
   end
 
   describe "signup page" do
