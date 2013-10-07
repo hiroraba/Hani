@@ -32,14 +32,48 @@ describe "Micropost pages" do
   end
 
   describe "micropost destruction" do
-    before { FactoryGirl.create(:micropost, user: user) }
-
+    before { FactoryGirl.create(:micropost, user: user) } 
     describe "as correct user" do
       before { visit root_path }
 
       it "should delete a micropost" do
-        expect { click_link "delete" }.to change(Micropost, :count).by(-1)
+	expect { click_link "delete" }.to change(Micropost, :count).by(-1)
       end
+    end
+  end
+
+  describe "pagination" do
+    before do
+      30.times { FactoryGirl.create(:micropost, user: user) } 
+      visit root_path
+    end
+    after { Micropost.delete_all }
+
+    it "should list each micopost" do
+      Micropost.paginate(page: 1).each do |micropost|
+	expect(page).to have_selector("li", text: micropost.content)
+      end
+    end
+  end
+
+  describe "check delete link" do
+    let(:user1) { FactoryGirl.create(:user, email: "hhhh@gmail.com") }
+    let(:m1) { FactoryGirl.create(:micropost, user: user1, content: "HELLO") }
+    let(:m2) { FactoryGirl.create(:micropost, user: user1, content: "GOODBYE") }
+
+    describe "link found" do
+      before do  
+        FactoryGirl.create(:micropost, user: user) 
+	visit root_path
+      end
+      it { should have_content("delete") }
+    end
+
+    describe "link not found" do
+      before do  
+	visit user_path(user1.id)
+      end
+      it { should_not have_content("delete") }
     end
   end
 end
