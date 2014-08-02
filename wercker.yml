@@ -9,5 +9,8 @@ build:
               echo "from location $(which ruby)"
               echo -p "gem list: $(gem list)"
       - script:
+	  name: migrate
+	  code: bundle exec rake db:migrate
+      - script:
           name: Run RSpec
-          code: bundle exec rspec
+          code: bundle exec rake spec
